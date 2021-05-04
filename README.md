@@ -31,3 +31,9 @@ When writing etl.py I could copy snippets from the notebook file. I had to itera
 ## [Optional] Provide example queries and results for song play analysis.
 I've skipped this part.
 
+## Overview of changes after I've gotten feedback:
+- implemented NOT NULL constraints in CREATE table statements
+- added PRIMARY KEY for all tables
+- added docstrings in etl.py with proper descriptions
+- modified the ON CONFLICT clause for the user table. Instead it will update the subscription value if a record is already found.
+- I've rerun create_tables & etl.py and both give no errors

@@ -7,30 +7,31 @@ artist_table_drop = "DROP TABLE IF EXISTS artists"
 time_table_drop = "DROP TABLE IF EXISTS time"
 
 # CREATE TABLES
-
+# I've added NOT NULL to most fields.
+# However, in table songplays song_id and artist_id are exempt as the song_select query will not always find a match
 songplay_table_create = ("""
 CREATE TABLE IF NOT EXISTS songplays
-(songplay_id serial, start_time varchar, user_id int NOT NULL, level varchar, song_id varchar, artist_id varchar, session_id varchar, location varchar, user_agent varchar)
+(songplay_id serial, start_time varchar NOT NULL, user_id int NOT NULL, level varchar NOT NULL, song_id varchar, artist_id varchar, session_id varchar NOT NULL, location varchar NOT NULL, user_agent varchar NOT NULL, primary key (songplay_id))
 """)
 
 user_table_create = ("""
 CREATE TABLE IF NOT EXISTS users
-(user_id varchar UNIQUE, first_name varchar, last_name varchar, gender varchar , level varchar)
+(user_id varchar NOT NULL, first_name varchar NOT NULL, last_name varchar NOT NULL, gender varchar NOT NULL, level varchar NOT NULL, primary key(user_id))
 """)
 
 song_table_create = ("""
 CREATE TABLE IF NOT EXISTS songs
-(song_id varchar UNIQUE, title varchar, artist_id varchar, year int, duration numeric)
+(song_id varchar, title varchar NOT NULL, artist_id varchar NOT NULL, year int NOT NULL, duration numeric NOT NULL, primary key(song_id))
 """)
 
 artist_table_create = ("""
 CREATE TABLE IF NOT EXISTS artists
-(artist_id varchar UNIQUE, name varchar, location varchar, latitude numeric, longitude numeric)
+(artist_id varchar, name varchar NOT NULL, location varchar NOT NULL, latitude numeric, longitude numeric, primary key(artist_id))
 """)
 
 time_table_create = ("""
 CREATE TABLE IF NOT EXISTS time
-(start_time varchar, hour int, day int, week int, month int, year int, weekday int)
+(start_time varchar NOT NULL, hour int NOT NULL, day int NOT NULL, week int NOT NULL, month int NOT NULL, year int NOT NULL, weekday int NOT NULL, primary key(start_time))
 """)
 
 # INSERT RECORDS
@@ -42,12 +43,13 @@ VALUES
 (%s, %s, %s, %s, %s, %s, %s, %s)
 """)
 
+# if a user already exists then update the record from free to paid
 user_table_insert = ("""
 INSERT INTO users
 (user_id, first_name, last_name, gender, level)
 VALUES
 (%s, %s, %s, %s, %s)
-ON CONFLICT (user_id) DO NOTHING;
+ON CONFLICT (user_id) DO UPDATE set level=EXCLUDED.level;
 """)
 
 song_table_insert = ("""
@@ -72,6 +74,7 @@ INSERT INTO time
 (start_time, hour, day, week, month, year, weekday)
 VALUES
 (%s,%s, %s, %s, %s, %s, %s)
+ON CONFLICT (start_time) DO NOTHING;
 """)
 
 # FIND SONGS
